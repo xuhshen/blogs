@@ -1,4 +1,4 @@
-"""xuhshen URL Configuration
+"""blogs URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/1.11/topics/http/urls/
@@ -13,14 +13,38 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
-from django.conf.urls import url
+from django.conf.urls import url,include
 from django.contrib import admin
+from django.contrib.sitemaps.views import index
+from django.contrib.sitemaps.views import sitemap
 
+from zinnia.sitemaps import AuthorSitemap
+from zinnia.sitemaps import CategorySitemap
+from zinnia.sitemaps import EntrySitemap
+from zinnia.sitemaps import TagSitemap
+
+sitemaps = {
+    'tags': TagSitemap,
+    'blog': EntrySitemap,
+    'authors': AuthorSitemap,
+    'categories': CategorySitemap
+}
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^blog/', include('zinnia.urls')),
     url(r'^comments/', include('django_comments.urls')),
 ]
+
+urlpatterns += [
+    url(r'^sitemap.xml$',
+        index,
+        {'sitemaps': sitemaps}),
+    url(r'^sitemap-(?P<section>.+)\.xml$',
+        sitemap,
+        {'sitemaps': sitemaps},
+        name='django.contrib.sitemaps.views.sitemap'),
+]
+
 
 
 #可选项
